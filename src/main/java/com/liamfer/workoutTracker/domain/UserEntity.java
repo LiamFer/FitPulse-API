@@ -39,8 +39,8 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority(UserRole.ADMIN.name()),new SimpleGrantedAuthority(UserRole.STANDARD.name()));
-        return List.of(new SimpleGrantedAuthority(UserRole.STANDARD.name()));
+        if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority(UserRole.ADMIN.getRole()),new SimpleGrantedAuthority(UserRole.STANDARD.getRole()));
+        return List.of(new SimpleGrantedAuthority(UserRole.STANDARD.getRole()));
     }
 
     @Override
