@@ -2,6 +2,11 @@ package com.liamfer.workoutTracker.domain;
 
 import com.liamfer.workoutTracker.enums.UserRole;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,14 +16,26 @@ import java.util.List;
 
 @Entity
 @Table(name = "user_tb")
+@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     public String id;
     public String name;
+    @Email
     public String email;
     public String password;
     public UserRole role;
+
+    public UserEntity(String name,String email,String password){
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = UserRole.STANDARD;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
