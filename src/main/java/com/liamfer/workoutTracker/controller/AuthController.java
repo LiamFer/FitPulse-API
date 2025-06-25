@@ -10,8 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
     @PostMapping("/register")
     public ResponseEntity<String> authRegister(){
-        return ResponseEntity.status(HttpStatus.CREATED).body("hoila");
+        return ResponseEntity.status(HttpStatus.CREATED).body("register");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> authLogin(){
+        return ResponseEntity.status(HttpStatus.CREATED).body("login");
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<String> authRefreshToken(){
+        return ResponseEntity.status(HttpStatus.CREATED).body("refresh token");
     }
 }
