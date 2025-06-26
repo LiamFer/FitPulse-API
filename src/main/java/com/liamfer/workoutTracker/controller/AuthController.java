@@ -1,10 +1,9 @@
 package com.liamfer.workoutTracker.controller;
 
-import com.liamfer.workoutTracker.DTO.APIResponseMessage;
-import com.liamfer.workoutTracker.DTO.CreateUserDTO;
-import com.liamfer.workoutTracker.DTO.LoginUserDTO;
-import com.liamfer.workoutTracker.DTO.TokensResponse;
+import com.liamfer.workoutTracker.DTO.*;
 import com.liamfer.workoutTracker.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +25,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokensResponse> authLogin(@RequestBody @Valid LoginUserDTO user){
-        return ResponseEntity.status(HttpStatus.OK).body(authService.loginUser(user));
+    public ResponseEntity<TokenResponse> authLogin(@RequestBody @Valid LoginUserDTO user, HttpServletResponse response) {
+        TokensDTO tokens = authService.loginUser(user);
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.refreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7 dias em segundos
+        refreshTokenCookie.setAttribute("SameSite","Strict");
+        response.addCookie(refreshTokenCookie);
+        TokenResponse accessOnly = new TokenResponse(tokens.token());
+        return ResponseEntity.ok(accessOnly);
     }
 
     @PostMapping("/refresh")

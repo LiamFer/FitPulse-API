@@ -3,12 +3,9 @@ package com.liamfer.workoutTracker.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.liamfer.workoutTracker.DTO.TokensResponse;
+import com.liamfer.workoutTracker.DTO.TokensDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -23,16 +20,11 @@ public class JWTService {
     private String refreshSecret;
     @Autowired
     private RedisService redisService;
-    private PasswordEncoder passwordEncoder;
 
-    public JWTService(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    public TokensResponse generateTokens(String subject){
+    public TokensDTO generateTokens(String subject){
         String token = this.generateToken(subject,false);
         String refreshToken = this.generateToken(subject,true);
-        return new TokensResponse(token,refreshToken);
+        return new TokensDTO(token,refreshToken);
     }
 
     public String validateToken(String token){
@@ -51,7 +43,7 @@ public class JWTService {
                 .withExpiresAt(getTokenExpiration(refreshToken))
                 .sign(algorithm);
         if(refreshToken){
-            redisService.set("refreshToken:"+subject,passwordEncoder.encode(token), Duration.ofDays(7));
+            redisService.set("refreshToken:"+subject,token, Duration.ofDays(7));
         }
         return token;
     }
