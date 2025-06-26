@@ -1,6 +1,7 @@
 package com.liamfer.workoutTracker.controller;
 
 import com.liamfer.workoutTracker.DTO.CreateWorkoutDTO;
+import com.liamfer.workoutTracker.DTO.UpdateWorkoutDTO;
 import com.liamfer.workoutTracker.domain.WorkoutEntity;
 import com.liamfer.workoutTracker.service.WorkoutService;
 import jakarta.validation.Valid;
@@ -27,5 +28,12 @@ public class WorkoutController {
     public ResponseEntity<WorkoutEntity> addWorkout(@AuthenticationPrincipal UserDetails user,
                                                     @RequestBody @Valid CreateWorkoutDTO workout){
         return ResponseEntity.status(HttpStatus.CREATED).body(workoutService.addNewWorkout(user,workout));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<WorkoutEntity> updateWorkout(@AuthenticationPrincipal UserDetails user,
+                                                       @PathVariable("id") Long id,
+                                                       @RequestBody @Valid UpdateWorkoutDTO workout){
+        return ResponseEntity.status(HttpStatus.OK).body(workoutService.updateWorkout(user,id,workout));
     }
 }
