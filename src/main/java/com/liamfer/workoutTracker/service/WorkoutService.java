@@ -9,6 +9,8 @@ import com.liamfer.workoutTracker.enums.WorkoutStatus;
 import com.liamfer.workoutTracker.exceptions.ResourceNotFoundException;
 import com.liamfer.workoutTracker.repository.UserRepository;
 import com.liamfer.workoutTracker.repository.WorkoutRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,10 @@ public class WorkoutService {
     public WorkoutService(UserRepository userRepository, WorkoutRepository workoutRepository) {
         this.userRepository = userRepository;
         this.workoutRepository = workoutRepository;
+    }
+
+    public Page<WorkoutEntity> getWorkouts(UserDetails user, Pageable pageable){
+        return workoutRepository.findAllByOwnerEmail(user.getUsername(),pageable);
     }
 
     public WorkoutEntity addNewWorkout(UserDetails user, CreateWorkoutDTO workout){

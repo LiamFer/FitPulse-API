@@ -5,6 +5,8 @@ import com.liamfer.workoutTracker.DTO.UpdateWorkoutDTO;
 import com.liamfer.workoutTracker.domain.WorkoutEntity;
 import com.liamfer.workoutTracker.service.WorkoutService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,9 +21,11 @@ public class WorkoutController {
         this.workoutService = workoutService;
     }
 
+
     @GetMapping
-    public ResponseEntity<String> getWorkout(@AuthenticationPrincipal UserDetails user){
-        return ResponseEntity.status(HttpStatus.CREATED).body(user.getUsername());
+    public ResponseEntity<Page<WorkoutEntity>> getWorkouts(@AuthenticationPrincipal UserDetails user,
+                                                           Pageable pageable){
+        return ResponseEntity.status(HttpStatus.OK).body(workoutService.getWorkouts(user,pageable));
     }
 
     @PostMapping()
