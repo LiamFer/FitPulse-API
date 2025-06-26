@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class AuthService {
@@ -46,7 +47,9 @@ public class AuthService {
     }
 
     public TokensDTO refreshToken(HttpServletRequest request){
-        Optional<Cookie> cookie = Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+        if(cookies == null) throw new JWTVerificationException("Refresh Token Inválido");
+        Optional<Cookie> cookie = Arrays.stream(cookies)
                 .filter(c -> c.getName().equalsIgnoreCase("refreshToken"))
                 .findFirst();
         if(cookie.isPresent()){

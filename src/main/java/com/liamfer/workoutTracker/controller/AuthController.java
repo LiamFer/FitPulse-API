@@ -1,7 +1,13 @@
 package com.liamfer.workoutTracker.controller;
 
 import com.liamfer.workoutTracker.DTO.*;
+import com.liamfer.workoutTracker.domain.WorkoutEntity;
 import com.liamfer.workoutTracker.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +25,19 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "Cria um novo usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = APIResponseMessage.class)
+                    )),
+            @ApiResponse(responseCode = "409", description = "Email já está em uso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = APIResponseMessage.class)
+                    ))
+    })
     @PostMapping("/register")
     public ResponseEntity<APIResponseMessage<String>> authRegister(@RequestBody @Valid CreateUserDTO user){
         authService.createUser(user);
@@ -26,6 +45,19 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "Faz login com as credenciais do Usuário e retorna Tokens JWT (Token + Cookie HTTPOnly Refresh Token)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login efetuado com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TokenResponse.class)
+                    )),
+            @ApiResponse(responseCode = "400", description = "Usuário inexistente ou senha inválida",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = APIResponseMessage.class)
+                    ))
+    })
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> authLogin(@RequestBody @Valid LoginUserDTO user, HttpServletResponse response) {
         TokensDTO tokens = authService.loginUser(user);
@@ -39,6 +71,19 @@ public class AuthController {
         return ResponseEntity.ok(accessOnly);
     }
 
+    @Operation(summary = "Usa o Refresh Token do Usuário e gera novos Tokens JWT (Token + Cookie HTTPOnly Refresh Token)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tokens JWT Gerados com Sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TokenResponse.class)
+                    )),
+            @ApiResponse(responseCode = "401", description = "Token Inválido/Expirado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = APIResponseMessage.class)
+                    ))
+    })
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> authRefreshToken(HttpServletRequest request,HttpServletResponse response){
         TokensDTO tokens = authService.refreshToken(request);
