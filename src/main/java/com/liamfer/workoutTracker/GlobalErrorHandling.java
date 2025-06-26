@@ -8,6 +8,7 @@ import com.liamfer.workoutTracker.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,6 +34,12 @@ public class GlobalErrorHandling {
     public ResponseEntity<APIResponseMessage<String>> IllegalArgumentHandler(IllegalArgumentException ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new APIResponseMessage<>(HttpStatus.BAD_REQUEST.value(),ex.getMessage()));
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<APIResponseMessage<String>> UsernameNotFoundExceptionHandler(UsernameNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new APIResponseMessage<>(HttpStatus.NOT_FOUND.value(),ex.getMessage()));
     }
 
     @ExceptionHandler({JWTDecodeException.class, JWTVerificationException.class})
