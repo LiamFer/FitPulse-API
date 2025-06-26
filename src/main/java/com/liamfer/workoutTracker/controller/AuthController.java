@@ -3,11 +3,15 @@ package com.liamfer.workoutTracker.controller;
 import com.liamfer.workoutTracker.DTO.*;
 import com.liamfer.workoutTracker.service.AuthService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,7 +42,15 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<String> authRefreshToken(){
-        return ResponseEntity.status(HttpStatus.CREATED).body("refresh token");
+    public ResponseEntity<TokenResponse> authRefreshToken(HttpServletRequest request,HttpServletResponse response){
+        TokensDTO tokens = authService.refreshToken(request);
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.refreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7 dias em segundos
+        refreshTokenCookie.setAttribute("SameSite","Strict");
+        response.addCookie(refreshTokenCookie);
+        TokenResponse accessOnly = new TokenResponse(tokens.token());
+        return ResponseEntity.ok(accessOnly);
     }
 }

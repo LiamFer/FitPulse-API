@@ -34,7 +34,7 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             if (header != null) {
                 String token = header.replace("Bearer ", "");
-                String email = jwtService.validateToken(token);
+                String email = jwtService.validateToken(token,false);
                 logger.info(email);
                 UserEntity user = userRepository.findByEmail(email).get();
                 var authUser = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

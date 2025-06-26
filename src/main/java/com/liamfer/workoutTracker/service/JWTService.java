@@ -3,6 +3,7 @@ package com.liamfer.workoutTracker.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.liamfer.workoutTracker.DTO.TokensDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,12 +28,21 @@ public class JWTService {
         return new TokensDTO(token,refreshToken);
     }
 
-    public String validateToken(String token){
-        Algorithm algorithm = Algorithm.HMAC256(secret);
+    public String validateToken(String token,boolean refreshToken){
+        Algorithm algorithm = Algorithm.HMAC256(refreshToken ? refreshSecret : secret);
         JWTVerifier verifier = JWT.require(algorithm)
                 .withIssuer("fit-pulse-api")
                 .build();
         return verifier.verify(token).getSubject();
+    }
+
+    public TokensDTO validateRefreshToken(String refreshToken){
+        String subject = validateToken(refreshToken,true);
+        String redisStoredValue = redisService.get("refreshToken:"+subject);
+        if(redisStoredValue != null && redisStoredValue.equals(refreshToken)){
+            return generateTokens(subject);
+        }
+        throw new JWTVerificationException("Refresh Token Inválido");
     }
 
     private String generateToken(String subject,boolean refreshToken){

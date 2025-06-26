@@ -1,16 +1,23 @@
 package com.liamfer.workoutTracker.service;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.liamfer.workoutTracker.DTO.CreateUserDTO;
 import com.liamfer.workoutTracker.DTO.LoginUserDTO;
+import com.liamfer.workoutTracker.DTO.TokenResponse;
 import com.liamfer.workoutTracker.DTO.TokensDTO;
 import com.liamfer.workoutTracker.domain.UserEntity;
 import com.liamfer.workoutTracker.exceptions.EmailAlreadyInUseException;
 import com.liamfer.workoutTracker.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -36,6 +43,17 @@ public class AuthService {
         var authUser = new UsernamePasswordAuthenticationToken(user.email(),user.password());
         Authentication auth = authenticationManager.authenticate(authUser);
         return jwtService.generateTokens(user.email());
+    }
+
+    public TokensDTO refreshToken(HttpServletRequest request){
+        Optional<Cookie> cookie = Arrays.stream(request.getCookies())
+                .filter(c -> c.getName().equalsIgnoreCase("refreshToken"))
+                .findFirst();
+        if(cookie.isPresent()){
+            String refreshToken = cookie.get().getValue();
+            return jwtService.validateRefreshToken(refreshToken);
+        }
+        throw new JWTVerificationException("Refresh Token Inválido");
     }
 
 
