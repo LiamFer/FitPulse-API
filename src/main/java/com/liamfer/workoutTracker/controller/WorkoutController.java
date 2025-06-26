@@ -1,17 +1,31 @@
 package com.liamfer.workoutTracker.controller;
 
+import com.liamfer.workoutTracker.DTO.CreateWorkoutDTO;
+import com.liamfer.workoutTracker.domain.WorkoutEntity;
+import com.liamfer.workoutTracker.service.WorkoutService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/workout")
 public class WorkoutController {
+    private final WorkoutService workoutService;
+    public WorkoutController(WorkoutService workoutService) {
+        this.workoutService = workoutService;
+    }
 
     @GetMapping
-    public ResponseEntity<String> getWorkout(){
-        return ResponseEntity.status(HttpStatus.CREATED).body("hola ninos");
+    public ResponseEntity<String> getWorkout(@AuthenticationPrincipal UserDetails user){
+        return ResponseEntity.status(HttpStatus.CREATED).body(user.getUsername());
+    }
+
+    @PostMapping()
+    public ResponseEntity<WorkoutEntity> addWorkout(@AuthenticationPrincipal UserDetails user,
+                                                    @RequestBody @Valid CreateWorkoutDTO workout){
+        return ResponseEntity.status(HttpStatus.CREATED).body(workoutService.addNewWorkout(user,workout));
     }
 }
