@@ -1,6 +1,7 @@
 package com.liamfer.workoutTracker.service;
 
 import com.liamfer.workoutTracker.DTO.CreateWorkoutDTO;
+import com.liamfer.workoutTracker.DTO.FinishedCountPerMonthDTO;
 import com.liamfer.workoutTracker.DTO.UpdateWorkoutDTO;
 import com.liamfer.workoutTracker.domain.ExerciseEntity;
 import com.liamfer.workoutTracker.domain.UserEntity;
@@ -30,6 +31,10 @@ public class WorkoutService {
 
     public Page<WorkoutEntity> getWorkouts(UserDetails user, Pageable pageable){
         return workoutRepository.findAllByOwnerEmail(user.getUsername(),pageable);
+    }
+
+    public List<FinishedCountPerMonthDTO> getWorkoutsReport(UserDetails user){
+        return workoutRepository.countFinishedPerMonthByOwnerEmail(user.getUsername(),WorkoutStatus.FINISHED);
     }
 
     public WorkoutEntity addNewWorkout(UserDetails user, CreateWorkoutDTO workout){

@@ -1,6 +1,7 @@
 package com.liamfer.workoutTracker.controller;
 
 import com.liamfer.workoutTracker.DTO.CreateWorkoutDTO;
+import com.liamfer.workoutTracker.DTO.FinishedCountPerMonthDTO;
 import com.liamfer.workoutTracker.DTO.UpdateWorkoutDTO;
 import com.liamfer.workoutTracker.domain.WorkoutEntity;
 import com.liamfer.workoutTracker.service.WorkoutService;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/workout")
@@ -26,6 +29,11 @@ public class WorkoutController {
     public ResponseEntity<Page<WorkoutEntity>> getWorkouts(@AuthenticationPrincipal UserDetails user,
                                                            Pageable pageable){
         return ResponseEntity.status(HttpStatus.OK).body(workoutService.getWorkouts(user,pageable));
+    }
+
+    @GetMapping("/report")
+    public ResponseEntity<List<FinishedCountPerMonthDTO>> getWorkouts(@AuthenticationPrincipal UserDetails user){
+        return ResponseEntity.status(HttpStatus.OK).body(workoutService.getWorkoutsReport(user));
     }
 
     @PostMapping()
