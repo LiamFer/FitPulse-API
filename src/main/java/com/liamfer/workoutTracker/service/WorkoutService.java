@@ -96,6 +96,11 @@ public class WorkoutService {
         return workoutRepository.save(workoutData);
     }
 
+    public void deleteWorkout(UserDetails user, Long id){
+        findWorkoutById(id, user.getUsername());
+        workoutRepository.deleteById(id);
+    }
+
     private WorkoutEntity findWorkoutById(Long id, String email){
         Optional<WorkoutEntity> workout = workoutRepository.findById(id);
         if(workout.isPresent()){

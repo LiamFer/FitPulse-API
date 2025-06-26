@@ -36,4 +36,11 @@ public class WorkoutController {
                                                        @RequestBody @Valid UpdateWorkoutDTO workout){
         return ResponseEntity.status(HttpStatus.OK).body(workoutService.updateWorkout(user,id,workout));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteWorkout(@AuthenticationPrincipal UserDetails user,
+                                              @PathVariable("id") Long id){
+        workoutService.deleteWorkout(user,id);
+        return ResponseEntity.noContent().build();
+    }
 }
