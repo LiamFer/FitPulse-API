@@ -23,7 +23,7 @@ API RESTful para gerenciamento de treinos pessoais (workouts) com autenticação
 - Redis (hospedado no [Railway](https://railway.app))
 - Swagger UI (SpringDoc OpenAPI 3)
 - Lombok
-- Docker (opcional)
+- Docker/Podman (opcional)
 
 ---
 ![defaultWorkflow.png](images/defaultWorkflow.png)
@@ -32,7 +32,7 @@ API RESTful para gerenciamento de treinos pessoais (workouts) com autenticação
 
 ## 📚 Funcionalidades
 
-- Registro e autenticação de usuários com JWT e refresh tokens (cookie HTTPOnly)
+- Registro e autenticação de usuários com JWT e refresh tokens no Redis (cookie HTTPOnly)
 - CRUD completo de treinos (Workouts) e exercícios (Exercises)
 - Controle de status do treino (`PENDING`,`ACTIVE`, `FINISHED`)
 - Resposta Páginada dos Treinos
