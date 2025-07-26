@@ -15,8 +15,8 @@ API RESTful para gerenciamento de treinos pessoais (workouts) com autenticação
 
 ## 🔧 Tecnologias Utilizadas
 
-- Java 17+
-- Spring Boot
+- Java 21+
+- Spring Boot Framework
 - Spring Security + JWT
 - Spring Data JPA
 - PostgreSQL (hospedado no [Supabase](https://supabase.com))
